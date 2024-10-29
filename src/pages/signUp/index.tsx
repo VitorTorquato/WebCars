@@ -8,6 +8,7 @@ import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 
+
 import { auth } from '../../services/firebaseConnection';
 import { 
     createUserWithEmailAndPassword,
@@ -15,7 +16,8 @@ import {
     updateProfile}
      from 'firebase/auth';
      
-import { useEffect } from 'react';
+import { useEffect , useContext} from 'react';
+import { AuthContext } from '../../contexts/authContext';
 
 
 
@@ -32,6 +34,8 @@ type FormData = z.infer<typeof schema>
 
 export function SignUp(){
 
+    const {handleInfoUser } = useContext(AuthContext);
+
     const {register,handleSubmit, formState:{errors}} = useForm<FormData>({
         resolver:zodResolver(schema),
         mode:'onChange'
@@ -46,7 +50,13 @@ export function SignUp(){
                     displayName: data.fullName
                 })
 
-                console.log('well done')
+                handleInfoUser({
+                    name:data.fullName,
+                    email:data.email,
+                    uid: user.user.uid
+                })
+
+                //console.log('well done')
                 navigate('/dashboard' , {replace:true})
         }).catch((error) => {
             console.log('erro ao cadastrar o usuario' , error)
