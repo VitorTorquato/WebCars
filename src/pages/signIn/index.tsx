@@ -50,26 +50,42 @@ export function SignIn(){
 
                 <form
                 onSubmit={handleSubmit(onSubmit)}
-                className='bg-white max-w-xl w-full rounded-lg'
+                className='bg-white max-w-xl w-full rounded-lg p-4'
                 >
-                    <Input
-                        type='email'
-                        placeholder='Digite seu email...'
-                        name='email'
-                        error={errors.email?.message}
-                        register={register}
-                    />
-                    <Input
-                        type='password'
-                        placeholder='Digite seu password'
-                        name='password'
-                        error={errors.password?.message}
-                        register={register}
-                    />
+                    <div 
+                    className='mb-3'
+                    >
+                        <Input
+                            type='email'
+                            placeholder='Digite seu email...'
+                            name='email'
+                            error={errors.email?.message}
+                            register={register}
+                        />
+                    </div>
+
+                    <div 
+                    className='mb-3'
+                    >
+                        <Input
+                            type='password'
+                            placeholder='Digite seu password'
+                            name='password'
+                            error={errors.password?.message}
+                            register={register}
+                        />
+                    </div>
 
 
-                    <button>Acessar</button>
+                    <button
+                    type='submit'
+                    className='bg-zinc-900 w-full rounded-md text-white h-10 font-medium'
+                    >Acessar</button>
                 </form>
+
+                <Link to='/register'> 
+                    Ainda nao possui uma conta? Faca o cadastro!
+                </Link>
 
             </div>
         </Container>

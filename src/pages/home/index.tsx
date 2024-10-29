@@ -31,7 +31,7 @@ export function Home(){
                  >
                     <img
                     className="w-full rounded-lg max-h-72 mb-2 hover:scale-105 transition-all"
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_6kIGPMgJPiIUuZcmpRJ8QY-khd04Qi s" alt="Carro" />
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNX-0p5rB_PI0B6oXnnUTkfCp_uZ1DBtcyYQ&s" alt="Carro" />
 
                     <p
                      className="font-bold mt-1 mb-2 px-2"
