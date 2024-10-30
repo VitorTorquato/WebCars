@@ -16,7 +16,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import { AuthContext } from '../../../contexts/authContext'
 
 
-import { storage } from '../../../services/firebaseConnection';
+import { storage , db} from '../../../services/firebaseConnection';
 
 import {
     ref,
@@ -24,6 +24,9 @@ import {
     getDownloadURL,
     deleteObject
 } from 'firebase/storage'
+
+import {addDoc,collection} from 'firebase/firestore'
+
 
 
 const schema = z.object({
@@ -63,7 +66,43 @@ export function DashoardNew(){
 
 
     function onSubmit(data: FormData){
-        console.log(data)
+        
+            if(carImages.length === 0){
+                alert('Envie alguma imagem desse carro')
+                return;
+        }
+
+        const carListImages = carImages.map( car => {
+            return{
+                uid:car.uid,
+                name:car.name,
+                url:car.url
+            }
+        })
+
+        addDoc(collection(db, 'cars') , {
+            name:data.carName,
+            model:data.model,
+            year: data.year,
+            city: data.city,
+            km: data.km,
+            price: data.price,
+            description: data.description,
+            whatsapp: data.whatsapp,
+            createdAt: new Date(),
+            owner: user?.name,
+            uid: user?.uid,
+            images: carListImages,
+
+        })
+        .then(() => {
+            reset();
+            setCarImages([]);
+            alert('Cadastrado com sucesso');
+        }).catch((error) => {
+            console.log(error , 'Erro ao cadastrar no banco')
+        })
+
     }
 
     async function handleUpload(image : File){
