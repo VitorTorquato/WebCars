@@ -1,6 +1,68 @@
 import { Container } from "../../components/container";
+import { Link } from "react-router-dom";
+
+import { useState,useEffect } from "react";
+
+import {collection,query,getDocs, orderBy} from 'firebase/firestore'
+import {db} from '../../services/firebaseConnection'
+
+interface CarsProps{
+    id:string;
+    name:string;
+    year:string;
+    uid:string;
+    price:string | number;
+    city:string;
+    km:string
+    image:CarImageProps[];
+}
+
+interface CarImageProps{
+    name:string;
+    uid:string;
+    url:string;
+}
 
 export function Home(){
+
+
+    const [cars,setCars] = useState<CarsProps[]>([]);
+    const [loadImages,setLoadImages] = useState<string[]>([]);
+
+//Para evitar o efeito layout shift
+    function handleImageLoad(id:string){
+        setLoadImages((prevState) => [...prevState,id])
+    }
+
+    useEffect(() => {
+        function  loadCars(){
+            const carsRef = collection(db,'cars')
+            const queryRef = query(carsRef, orderBy('createdAt' , 'desc'))
+
+            getDocs(queryRef)
+            .then((snapshot) => {
+                let listCars = [] as CarsProps[];
+
+                snapshot.forEach( doc => {
+                    listCars.push({
+                        id: doc.id,
+                        name: doc.data().name,
+                        year: doc.data().year,
+                        km: doc.data().km,
+                        city: doc.data().city,
+                        price: doc.data().price,
+                        image: doc.data().images,
+                        uid: doc.data().uid
+                    })
+                })
+
+                setCars(listCars);
+
+            })
+        }
+        loadCars()
+
+    } , [])
     return(
         <Container>
          <section
@@ -26,43 +88,66 @@ export function Home(){
             <main
             className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-                <section 
-                 className="w-ful bg-white rounded-lg overflow-hidden"
-                 >
-                    <img
-                    className="w-full rounded-lg max-h-72 mb-2 hover:scale-105 transition-all"
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNX-0p5rB_PI0B6oXnnUTkfCp_uZ1DBtcyYQ&s" alt="Carro" />
-
-                    <p
-                     className="font-bold mt-1 mb-2 px-2"
-                     >Fiesta</p>
-
-                    <div
-                    className="flex flex-col px-2"
+               {
+                cars.map((car) => (
+                   <Link
+                   key={car.id}
+                   to={`/details/${car.id}`}
+                   >
+                   
+                   <section 
+                    
+                    className="w-ful bg-white rounded-lg overflow-hidden"
                     >
-                        <span
-                        className="text-zinc-700 mb-6"
-                        >Ano 2016/2016 | 23.000 km</span>
 
-                        <strong
-                        className="text-black font-medium text-xl"
-                        >R$ 190.000
-
-                        </strong>
-                    </div>
-
-                        <div
-                        className="w-full h-px bg-slate-200 my-2"
-                         ></div>
-
-                         <div
-                         className="px-2 pb-2"
+                        <div className="w-full h-72 rounded-lg bg-slate-200"
+                        style={{display: loadImages.includes(car.id) ? 'none' : 'block'}}
                         >
-                            <span
-                            className="text-zinc-700"
-                            >Salto - SP</span>
+
                         </div>
-                </section>
+                       <img
+                       className="w-full rounded-lg max-h-72 mb-2 hover:scale-105 transition-all"
+                       src={car.image[0].url} alt={car.name} 
+                       onLoad={() => handleImageLoad(car.id)}
+                       style={{display: loadImages.includes(car.id) ? 'block' : 'none'}}
+                       />
+   
+                       <p
+                        className="font-bold mt-1 mb-2 px-2"
+                        >{car.name}</p>
+   
+                       <div
+                       className="flex flex-col px-2"
+                       >
+                           <span
+                           className="text-zinc-700 mb-6"
+                           >Ano: {car.year} | {car.km} KM</span>
+   
+                           <strong
+                           className="text-black font-medium text-xl"
+                           >{Number(car.price).toLocaleString('pt-BR' , {
+                            style:'currency',
+                            currency: 'BRL'
+                           })}
+   
+                           </strong>
+                       </div>
+   
+                           <div
+                           className="w-full h-px bg-slate-200 my-2"
+                            ></div>
+   
+                            <div
+                            className="px-2 pb-2"
+                           >
+                               <span
+                               className="text-zinc-700"
+                               >{car.city}</span>
+                           </div>
+                   </section>
+                   </Link>
+                ))
+               }
                             
             </main>
 
