@@ -52,6 +52,8 @@ interface ImageProps{
     url: string
 }
 
+import toast from 'react-hot-toast';
+
 export function DashoardNew(){
 
     const { user } = useContext(AuthContext);
@@ -68,7 +70,8 @@ export function DashoardNew(){
     function onSubmit(data: FormData){
         
             if(carImages.length === 0){
-                alert('Envie alguma imagem desse carro')
+                toast.error('Send at least one image');
+                
                 return;
         }
 
@@ -81,7 +84,7 @@ export function DashoardNew(){
         })
 
         addDoc(collection(db, 'cars') , {
-            name:data.carName,
+            name:data.carName.toUpperCase(),
             model:data.model,
             year: data.year,
             city: data.city,
@@ -98,9 +101,9 @@ export function DashoardNew(){
         .then(() => {
             reset();
             setCarImages([]);
-            alert('Cadastrado com sucesso');
+            toast.success('Car uploaded successfully')
         }).catch((error) => {
-            console.log(error , 'Erro ao cadastrar no banco')
+            console.log(error , 'something went wrong')
         })
 
     }
@@ -220,7 +223,7 @@ export function DashoardNew(){
                 >
 
                     <div className="mb-3">
-                        <p className="mb-2 font-medium">Nome do carro</p>
+                        <p className="mb-2 font-medium">Car name</p>
                     <Input
                     type="text"
                     register={register}
@@ -231,7 +234,7 @@ export function DashoardNew(){
                     </div>
 
                     <div className="mb-3">
-                        <p className="mb-2 font-medium">Modelo</p>
+                        <p className="mb-2 font-medium">Model</p>
                     <Input
                     type="text"
                     register={register}
@@ -244,13 +247,13 @@ export function DashoardNew(){
                     <div className="flex w-full mb-3 flex-row items-center gap-4">
 
                         <div className="w-full">
-                            <p className="mb-2 font-medium">Ano do carro</p>
+                            <p className="mb-2 font-medium">Year</p>
                         <Input
                         type="text"
                         register={register}
                         name="year"
                         error={errors.year?.message}
-                        placeholder="Ex: 1.0 flex plus, manual..."
+                        placeholder="Ex: 2024/2025"
                         />
                         </div>
                         
@@ -270,31 +273,31 @@ export function DashoardNew(){
                     <div className="flex w-full mb-3 flex-row items-center gap-4">
 
                             <div className="w-full">
-                                <p className="mb-2 font-medium">Telefone/Whatsapp</p>
+                                <p className="mb-2 font-medium">Phone/Whatsapp</p>
                             <Input
                             type="text"
                             register={register}
                             name="whatsapp"
                             error={errors.whatsapp?.message}
-                            placeholder="Ex: 11995985678..."
+                            placeholder="Ex: 35698570958..."
                             />
                             </div>
 
                             <div className="w-full">
-                                <p className="mb-2 font-medium">Cidade</p>
+                                <p className="mb-2 font-medium">City</p>
                             <Input
                             type="text"
                             register={register}
                             name="city"
                             error={errors.city?.message}
-                            placeholder="Ex: Salto,SP"
+                            placeholder="Ex: Sliema"
                             />
                             </div>
 
                          </div>
 
                          <div className="mb-3">
-                             <p className="mb-2 font-medium">Preco</p>
+                             <p className="mb-2 font-medium">Price</p>
                             <Input
                             type="text"
                             register={register}
@@ -305,14 +308,14 @@ export function DashoardNew(){
                          </div>
 
                          <div className="mb-3">
-                             <p className="mb-2 font-medium">Descricao</p>
+                             <p className="mb-2 font-medium">Description</p>
 
                              <textarea
                              className="border-2 w-full rounded-md h-24 px-2"
                              {...register('description')}
                              name="description"
                              id="description"
-                             placeholder="Digite a descricao completa do seu carro.."
+                             placeholder="Describe all the details of your vehicle"
                              />
                              {errors.description && <p className="mb-1 text-red-500">{errors.description.message}</p>}
 
@@ -323,7 +326,7 @@ export function DashoardNew(){
                         type="submit"
                         className="w-full h-10 rounded-md bg-zinc-900 font-medium text-white "
                         >
-                            Cadastrar    
+                            Upload    
                         </button>                 
 
                 </form>

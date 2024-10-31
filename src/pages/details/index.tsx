@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams ,useNavigate} from "react-router-dom"
 
 
 import {FaWhatsapp} from 'react-icons/fa'
@@ -44,6 +44,7 @@ export function Details(){
 
     const [car,setCar] = useState<CarProps>()
     const {id} = useParams();
+    const navigate = useNavigate();
 
     const [sliderPerview , setSliderPerview] = useState<number>(2)
 
@@ -54,6 +55,11 @@ export function Details(){
             const docRef = doc(db, 'cars' , id)
             getDoc(docRef)
             .then((snapshot) => {
+
+                if(!snapshot.data()){
+                    navigate('/')
+                }
+
                 setCar({
                     id:snapshot.data()?.id,
                     name: snapshot.data()?.name,
@@ -99,26 +105,30 @@ useEffect(() => {
 
     return(
         <Container>
-                <Swiper
-                slidesPerView={sliderPerview}
-                pagination={{clickable: true}}
-                navigation
-
-                >
-                    {
-                        car?.images.map(image => (
-                            <SwiperSlide key={image.name}>
-                                <img
-                                src={image.url}
-                                alt={image.name}
-                                className="w-full h-96 object-cover"
-                                 />
-                            </SwiperSlide>
-                        ))
-
-                    }
-
-                </Swiper>
+              {
+                car && (
+                    <Swiper
+                    slidesPerView={sliderPerview}
+                    pagination={{clickable: true}}
+                    navigation
+    
+                    >
+                        {
+                            car?.images.map(image => (
+                                <SwiperSlide key={image.name}>
+                                    <img
+                                    src={image.url}
+                                    alt={image.name}
+                                    className="w-full h-96 object-cover"
+                                     />
+                                </SwiperSlide>
+                            ))
+    
+                        }
+    
+                    </Swiper>
+                )
+              }
 
             {
                 car && (
@@ -172,6 +182,8 @@ useEffect(() => {
                            <p>{car?.whatsapp}</p>
 
                            <a 
+                           href={`https://api.whatsapp.com/send?${car?.whatsapp}&text=Ola vi esse ${car?.name} no site webCarros e fiquei enteressado`}
+                           target="_blank"
                            className="bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-lg font-medium cursor-pointer"
                            >
                             Conversar com o vendedor

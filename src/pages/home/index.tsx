@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { useState,useEffect } from "react";
 
-import {collection,query,getDocs, orderBy} from 'firebase/firestore'
+import {collection,query,getDocs, orderBy,where} from 'firebase/firestore'
 import {db} from '../../services/firebaseConnection'
 
 interface CarsProps{
@@ -28,41 +28,85 @@ export function Home(){
 
     const [cars,setCars] = useState<CarsProps[]>([]);
     const [loadImages,setLoadImages] = useState<string[]>([]);
+    const [search,setSearch] = useState('')
+
+  
 
 //Para evitar o efeito layout shift
     function handleImageLoad(id:string){
         setLoadImages((prevState) => [...prevState,id])
     }
 
-    useEffect(() => {
-        function  loadCars(){
-            const carsRef = collection(db,'cars')
-            const queryRef = query(carsRef, orderBy('createdAt' , 'desc'))
+    function  loadCars(){
+        const carsRef = collection(db,'cars')
+        const queryRef = query(carsRef, orderBy('createdAt' , 'desc'))
 
-            getDocs(queryRef)
-            .then((snapshot) => {
-                let listCars = [] as CarsProps[];
+        getDocs(queryRef)
+        .then((snapshot) => {
+            let listCars = [] as CarsProps[];
 
-                snapshot.forEach( doc => {
-                    listCars.push({
-                        id: doc.id,
-                        name: doc.data().name,
-                        year: doc.data().year,
-                        km: doc.data().km,
-                        city: doc.data().city,
-                        price: doc.data().price,
-                        image: doc.data().images,
-                        uid: doc.data().uid
-                    })
+            snapshot.forEach( doc => {
+                listCars.push({
+                    id: doc.id,
+                    name: doc.data().name,
+                    year: doc.data().year,
+                    km: doc.data().km,
+                    city: doc.data().city,
+                    price: doc.data().price,
+                    image: doc.data().images,
+                    uid: doc.data().uid
                 })
-
-                setCars(listCars);
-
             })
+
+            setCars(listCars);
+
+        })
+    }   
+    
+    
+    async function handleSearchCar(){
+        if(!search){
+            loadCars()
+            return;
         }
+        setCars([]);
+        setLoadImages([])
+
+        const q = query(collection(db, 'cars') ,
+         where('name' , '>=', search.toUpperCase()),
+         where('name' , '<=' , search.toUpperCase() + '\uf8ff')//um filtro para garatir que a consulta vi incluit todos os caracteres
+        )
+
+        const querySnapshot = await getDocs(q)
+
+        let listCars = [] as CarsProps[];
+
+        querySnapshot.forEach(doc => {
+            listCars.push({
+                id: doc.id,
+                name: doc.data().name,
+                year: doc.data().year,
+                km: doc.data().km,
+                city: doc.data().city,
+                price: doc.data().price,
+                image: doc.data().images,
+                uid: doc.data().uid
+            })
+        })
+
+        setCars(listCars)
+    }
+
+
+
+
+    useEffect(() => {
+        
         loadCars()
 
     } , [])
+
+
     return(
         <Container>
          <section
@@ -71,19 +115,21 @@ export function Home(){
             <input 
             className="w-full border-2 rounded-lg h-9 px-3 outline-none"
             type="text"
-            placeholder="Digite o nome do carro"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search for your car"
             />
 
             <button
+            onClick={handleSearchCar}
             className="bg-red-500 h-9 px-8 rounded-lg text-white font-medium text-lg"
             >
-             Buscar
+             Search
             </button>
         </section>
 
              <h1 
              className="font-bold text-center mt-6 text-2xl mb-4"
-             >Carros novos e usados em todo Brasil</h1>
+             >new and used cars throughout Malta</h1>
 
             <main
             className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"

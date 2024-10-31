@@ -25,7 +25,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-
+import toast from 'react-hot-toast';
 
 export function SignIn(){
 
@@ -41,11 +41,11 @@ export function SignIn(){
     function onSubmit(data: FormData){
             signInWithEmailAndPassword(auth, data.email,data.password)
             .then((user) => {
-                console.log('well done ')
                 console.log(user)
+                toast.success('Login successfully')                
                 navigate('/dashboard' , {replace: true})
-            }).catch((error) => {
-                console.log(error)
+            }).catch(() => {
+                toast.error("E-mail or password wrong doens't match")
             })
 
     }
@@ -86,7 +86,7 @@ export function SignIn(){
                     >
                         <Input
                             type='email'
-                            placeholder='Digite seu email...'
+                            placeholder='Email...'
                             name='email'
                             error={errors.email?.message}
                             register={register}
@@ -98,7 +98,7 @@ export function SignIn(){
                     >
                         <Input
                             type='password'
-                            placeholder='Digite seu password'
+                            placeholder='Password'
                             name='password'
                             error={errors.password?.message}
                             register={register}
@@ -113,7 +113,7 @@ export function SignIn(){
                 </form>
 
                 <Link to='/register'> 
-                    Ainda nao possui uma conta? Faca o cadastro!
+                    Don't have an account? Signup!
                 </Link>
 
             </div>

@@ -30,7 +30,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-
+import toast from 'react-hot-toast';
 
 export function SignUp(){
 
@@ -56,10 +56,10 @@ export function SignUp(){
                     uid: user.user.uid
                 })
 
-                //console.log('well done')
+                toast.success('Account created succssesfully')
                 navigate('/dashboard' , {replace:true})
-        }).catch((error) => {
-            console.log('erro ao cadastrar o usuario' , error)
+        }).catch(() => {
+            toast.error('Something went wrong, try again!')
         })
     }
 
@@ -97,7 +97,7 @@ export function SignUp(){
                     >
                         <Input
                             type='text'
-                            placeholder='Digite seu nome'
+                            placeholder='Name'
                             name='fullName'
                             error={errors.fullName?.message}
                             register={register}
@@ -108,7 +108,7 @@ export function SignUp(){
                     >
                         <Input
                             type='email'
-                            placeholder='Digite seu email...'
+                            placeholder='Email address'
                             name='email'
                             error={errors.email?.message}
                             register={register}
@@ -120,7 +120,7 @@ export function SignUp(){
                     >
                         <Input
                             type='password'
-                            placeholder='Digite seu password'
+                            placeholder='Password'
                             name='password'
                             error={errors.password?.message}
                             register={register}
@@ -131,11 +131,11 @@ export function SignUp(){
                     <button
                     type='submit'
                     className='bg-zinc-900 w-full rounded-md text-white h-10 font-medium'
-                    >Criar conta</button>
+                    >Create your account</button>
                 </form>
 
                 <Link to='/signin'> 
-                    Ja posui uma conta? Faca o login!
+                    Already have an account? Login!
                 </Link>
 
             </div>

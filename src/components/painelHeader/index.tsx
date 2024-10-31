@@ -17,7 +17,7 @@ export function PainelHeader(){
             </Link>
 
             <Link to='/new'>
-                Cadastrar carro
+                Add a new car
             </Link>
 
 
@@ -25,7 +25,7 @@ export function PainelHeader(){
             className="ml-auto "
             onClick={handleLogOut}
             >
-                Sair da conta
+                Logout
             </button>
         </div>
     )
